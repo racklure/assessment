@@ -1,0 +1,57 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">导入记录详情</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">基本信息</h5>
+            <dl class="row">
+                <dt class="col-sm-3">文件名</dt>
+                <dd class="col-sm-9">{{ record.file_name }}</dd>
+                
+                <dt class="col-sm-3">表名</dt>
+                <dd class="col-sm-9">{{ record.table_name }}</dd>
+                
+                <dt class="col-sm-3">导入时间</dt>
+                <dd class="col-sm-9">{{ record.import_time.strftime('%Y-%m-%d %H:%M:%S') }}</dd>
+                
+                <dt class="col-sm-3">导入用户</dt>
+                <dd class="col-sm-9">{{ record.import_user.username }}</dd>
+                
+                <dt class="col-sm-3">描述</dt>
+                <dd class="col-sm-9">{{ record.description }}</dd>
+            </dl>
+        </div>
+    </div>
+    
+    {% if table_data %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">数据预览</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            {% for key in table_data[0].keys() %}
+                            <th>{{ key }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in table_data %}
+                        <tr>
+                            {% for value in row.values() %}
+                            <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

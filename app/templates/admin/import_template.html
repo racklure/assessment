@@ -1,0 +1,86 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>导入模板</h2>
+    
+    <!-- 文件上传表单 -->
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">选择Excel文件</label>
+            <input type="file" class="form-control" id="file" name="file" accept=".xlsx,.xls">
+        </div>
+        <div class="form-group">
+            <label for="description">描述</label>
+            <textarea class="form-control" id="description" name="description"></textarea>
+        </div>
+        <button type="button" class="btn btn-info" onclick="previewFile()">预览</button>
+        <button type="submit" class="btn btn-primary" style="display:none;" id="importBtn">确认导入</button>
+    </form>
+    
+    <!-- 预览区域 -->
+    <div id="previewArea" style="display:none;" class="mt-4">
+        <h3>数据预览</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead id="previewHeader"></thead>
+                <tbody id="previewBody"></tbody>
+            </table>
+        </div>
+        <p id="totalRows"></p>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+function previewFile() {
+    const formData = new FormData(document.getElementById('uploadForm'));
+    
+    fetch('{{ url_for("admin.preview_template") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        
+        // 显示表头
+        const headerRow = document.createElement('tr');
+        data.headers.forEach(header => {
+            const th = document.createElement('th');
+            th.textContent = header;
+            headerRow.appendChild(th);
+        });
+        document.getElementById('previewHeader').innerHTML = '';
+        document.getElementById('previewHeader').appendChild(headerRow);
+        
+        // 显示预览数据
+        const tbody = document.getElementById('previewBody');
+        tbody.innerHTML = '';
+        data.data.forEach(row => {
+            const tr = document.createElement('tr');
+            data.headers.forEach(header => {
+                const td = document.createElement('td');
+                td.textContent = row[header];
+                tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+        });
+        
+        // 显示总行数
+        document.getElementById('totalRows').textContent = `总行数：${data.total_rows}`;
+        
+        // 显示预览区域和导入按钮
+        document.getElementById('previewArea').style.display = 'block';
+        document.getElementById('importBtn').style.display = 'inline-block';
+    })
+    .catch(error => {
+        alert('预览失败：' + error);
+    });
+}
+</script>
+{% endblock %}
+{% endblock %}

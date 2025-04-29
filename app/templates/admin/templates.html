@@ -1,0 +1,52 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>考核模板管理</h2>
+        <div>
+            <a href="{{ url_for('admin.import_template') }}" class="btn btn-success">导入模板</a>
+            <a href="{{ url_for('admin.new_template') }}" class="btn btn-primary">新建模板</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>模板名称</th>
+                        <th>类型</th>
+                        <th>创建时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for template in templates %}
+                    <tr>
+                        <td>{{ template.template_name }}</td>
+                        <td>
+                            {% if template.category == 'imported' %}
+                            <span class="badge badge-info">Excel导入</span>
+                            {% else %}
+                            <span class="badge badge-primary">手动创建</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ template.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.view_template', template_id=template.id) }}" 
+                               class="btn btn-sm btn-info">查看</a>
+                            <a href="{{ url_for('admin.edit_template', template_id=template.id) }}" 
+                               class="btn btn-sm btn-warning">编辑</a>
+                            <a href="{{ url_for('admin.delete_template', template_id=template.id) }}" 
+                               class="btn btn-sm btn-danger" 
+                               onclick="return confirm('确定要删除此模板吗？')">删除</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

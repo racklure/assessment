@@ -1,0 +1,40 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>考核管理</h2>
+        <a href="{{ url_for('admin.new_assessment') }}" class="btn btn-primary">新建考核</a>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>考核名称</th>
+                    <th>部门</th>
+                    <th>模板</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assessment in assessments %}
+                <tr>
+                    <td>{{ assessment.id }}</td>
+                    <td>{{ assessment.assessment_name }}</td>
+                    <td>{{ assessment.department }}</td>
+                    <td>{{ assessment.template.template_name }}</td>
+                    <td>{{ assessment.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.view_assessment', assessment_id=assessment.id) }}" 
+                           class="btn btn-sm btn-info">查看</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

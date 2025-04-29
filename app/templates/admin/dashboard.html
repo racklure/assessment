@@ -1,0 +1,101 @@
+{% extends 'layout.html' %}
+
+{% block title %}管理面板 - 考核评分系统{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>考核管理</h2>
+            <p>管理考核评分表和考核设置</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('admin.new_assessment') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> 新建考核
+            </a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-header">
+            考核列表
+        </div>
+        <div class="card-body">
+            {% if assessments %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>考核名称</th>
+                            <th>考核部门</th>
+                            <th>导入日期</th>
+                            <th>上传日期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assessment in assessments %}
+                        <tr>
+                            <td>{{ assessment.id }}</td>
+                            <td>{{ assessment.assessment_name }}</td>
+                            <td>{{ assessment.department }}</td>
+                            <td>{{ assessment.import_date.strftime('%Y-%m-%d') }}</td>
+                            <td>{{ assessment.upload_date.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <a href="{{ url_for('statistics.assessment_statistics', assessment_id=assessment.id) }}" class="btn btn-sm btn-info">查看统计</a>
+                                <a href="{{ url_for('statistics.export_assessment', assessment_id=assessment.id) }}" class="btn btn-sm btn-secondary">导出数据</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center">暂无考核数据</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    考核人管理
+                </div>
+                <div class="card-body">
+                    <p>管理考核人信息、分组和权重设置</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('admin.assessors') }}" class="btn btn-outline-primary">查看考核人</a>
+                        <a href="{{ url_for('admin.import_assessors') }}" class="btn btn-outline-success">导入考核人</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    被考核人管理
+                </div>
+                <div class="card-body">
+                    <p>管理被考核人信息和部门设置</p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('admin.assessees') }}" class="btn btn-outline-primary">查看被考核人</a>
+                        <a href="{{ url_for('admin.import_assessees') }}" class="btn btn-outline-success">导入被考核人</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">导入记录</h2>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>文件名</th>
+                    <th>表名</th>
+                    <th>导入时间</th>
+                    <th>导入用户</th>
+                    <th>描述</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.id }}</td>
+                    <td>{{ record.file_name }}</td>
+                    <td>{{ record.table_name }}</td>
+                    <td>{{ record.import_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ record.import_user.username }}</td>
+                    <td>{{ record.description }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.view_import_record', record_id=record.id) }}" 
+                           class="btn btn-sm btn-info">查看</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

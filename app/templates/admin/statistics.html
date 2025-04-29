@@ -1,0 +1,101 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">统计分析</h2>
+    
+    <!-- 基础统计 -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">总考核数</h5>
+                    <p class="card-text display-4">{{ stats.total_assessments }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">考核人数</h5>
+                    <p class="card-text display-4">{{ stats.total_assessors }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">被考核人数</h5>
+                    <p class="card-text display-4">{{ stats.total_assessees }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">评分记录数</h5>
+                    <p class="card-text display-4">{{ stats.total_records }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 部门统计 -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">部门考核统计</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>部门</th>
+                            <th>考核数量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dept in department_stats %}
+                        <tr>
+                            <td>{{ dept.department }}</td>
+                            <td>{{ dept.count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 最近评分记录 -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">最近评分记录</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>考核人</th>
+                            <th>被考核人</th>
+                            <th>总分</th>
+                            <th>评分时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in recent_records %}
+                        <tr>
+                            <td>{{ record.assessor.name }}</td>
+                            <td>{{ record.assessee.name }}</td>
+                            <td>{{ record.get_total_score() }}</td>
+                            <td>{{ record.create_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
