@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>模板详情</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ template.template_name }}</h5>
+            <p class="card-text">
+                <strong>类别：</strong>{{ template.category }}<br>
+                <strong>创建时间：</strong>{{ template.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+            </p>
+        </div>
+    </div>
+
+    <h3 class="mt-4">评分项目</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>名称</th>
+                <th>分值</th>
+                <th>评分标准</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in template.items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.score }}</td>
+                <td>{{ item.criteria }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-3">
+        <a href="{{ url_for('admin.templates') }}" class="btn btn-secondary">返回列表</a>
+        <a href="{{ url_for('admin.edit_template', template_id=template.id) }}" class="btn btn-primary">编辑模板</a>
+    </div>
+</div>
+{% endblock %}

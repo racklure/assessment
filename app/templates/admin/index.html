@@ -1,0 +1,87 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>管理后台</h2>
+        <a href="{{ url_for('admin.new_assessment') }}" class="btn btn-primary">新建考核</a>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">考核模板</h5>
+                    <p class="card-text display-4">{{ stats.template_count }}</p>
+                    <a href="{{ url_for('admin.templates') }}" class="btn btn-primary">查看详情</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">考核人</h5>
+                    <p class="card-text display-4">{{ stats.assessor_count }}</p>
+                    <a href="{{ url_for('admin.assessors') }}" class="btn btn-primary">查看详情</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">被考核人</h5>
+                    <p class="card-text display-4">{{ stats.assessee_count }}</p>
+                    <a href="{{ url_for('admin.assessees') }}" class="btn btn-primary">查看详情</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">导入记录</h5>
+                    <p class="card-text display-4">{{ stats.import_record_count }}</p>
+                    <a href="{{ url_for('admin.import_records') }}" class="btn btn-primary">查看详情</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 最近的考核列表 -->
+    <div class="card mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">最近考核</h5>
+            <a href="{{ url_for('admin.assessments') }}" class="btn btn-sm btn-outline-primary">查看全部</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>考核名称</th>
+                            <th>部门</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assessment in recent_assessments %}
+                        <tr>
+                            <td>{{ assessment.assessment_name }}</td>
+                            <td>{{ assessment.department }}</td>
+                            <td>{{ assessment.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.view_assessment', assessment_id=assessment.id) }}" 
+                                   class="btn btn-sm btn-info">查看</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'layout.html' %}
+
+{% block title %}数据统计 - 考核评分系统{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>数据统计</h2>
+            <p>查看考核评分统计数据和分析报告</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    考核统计
+                </div>
+                <div class="card-body">
+                    <p>查看各考核的详细统计数据</p>
+                    {% if assessments %}
+                    <div class="list-group">
+                        {% for assessment in assessments %}
+                        <a href="{{ url_for('statistics.assessment_statistics', assessment_id=assessment.id) }}" class="list-group-item list-group-item-action">
+                            {{ assessment.assessment_name }}
+                            <span class="badge bg-primary float-end">{{ assessment.department }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-center">暂无考核数据</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    季度统计
+                </div>
+                <div class="card-body">
+                    <p>查看按季度汇总的统计数据</p>
+                    
+                    <form action="{{ url_for('statistics.quarterly_statistics') }}" method="GET" class="mb-3">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="year" class="form-label">年份</label>
+                                <select class="form-select" id="year" name="year">
+                                    {% for y in range(2023, 2031) %}
+                                    <option value="{{ y }}" {% if y == now.year %}selected{% endif %}>{{ y }}年</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="quarter" class="form-label">季度</label>
+                                <select class="form-select" id="quarter" name="quarter">
+                                    <option value="1">第1季度</option>
+                                    <option value="2">第2季度</option>
+                                    <option value="3">第3季度</option>
+                                    <option value="4">第4季度</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-primary">查看季度统计</button>
+                        </div>
+                    </form>
+                    
+                    <div class="d-grid">
+                        <a href="{{ url_for('statistics.export_quarterly') }}" class="btn btn-outline-secondary">
+                            导出当前季度数据
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    部门统计
+                </div>
+                <div class="card-body">
+                    <p>按部门查看统计数据</p>
+                    
+                    <div class="row">
+                        {% for department in departments %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ department }}</h5>
+                                    <p class="card-text">查看{{ department }}的考核统计数据</p>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">查看详情</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

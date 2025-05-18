@@ -1,0 +1,71 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+  <h3 class="mb-4">设置考核人</h3>
+
+  <!-- 搜索框：支持人名和部门 -->
+  <div class="form-group mb-4">
+    <input type="text" class="form-control" id="searchBox" placeholder="🔍 输入考核人姓名或部门名称…" oninput="filterAssessors()">
+  </div>
+
+  <form method="POST">
+    <div class="row">
+      {% for group, assessors in grouped_assessors.items() %}
+      <div class="col-md-6 col-lg-4 mb-4 card-group-container" data-department="{{ group | lower }}">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-primary text-white py-2 px-3">
+            <strong>{{ group }}</strong>
+          </div>
+          <ul class="list-group list-group-flush">
+            {% for assessor in assessors %}
+            <li class="list-group-item assessor-item" data-name="{{ assessor.name | lower }}">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox"
+                       name="assessor_ids"
+                       value="{{ assessor.id }}"
+                       id="assessor_{{ assessor.id }}"
+                       {% if assessor.id in assigned_ids %}checked{% endif %}>
+                <label class="form-check-label" for="assessor_{{ assessor.id }}">
+                  {{ assessor.name }}
+                </label>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-success btn-lg">保存设置</button>
+      <a href="{{ url_for('admin.view_assessment', assessment_id=assessment.id) }}" class="btn btn-secondary btn-lg">返回</a>
+    </div>
+  </form>
+</div>
+
+<!-- 搜索过滤：支持姓名或部门模糊匹配 -->
+<script>
+function filterAssessors() {
+  const input = document.getElementById("searchBox").value.toLowerCase();
+  const groups = document.querySelectorAll(".card-group-container");
+
+  groups.forEach(group => {
+    const groupDept = group.getAttribute("data-department");
+    const items = group.querySelectorAll(".assessor-item");
+    let groupMatches = groupDept.includes(input);
+    let matchCount = 0;
+
+    items.forEach(item => {
+      const name = item.getAttribute("data-name");
+      const visible = name.includes(input) || groupMatches;
+      item.style.display = visible ? "" : "none";
+      if (visible) matchCount++;
+    });
+
+    group.style.display = matchCount > 0 ? "" : "none";
+  });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>考核管理</h2>
+        <a href="{{ url_for('admin.new_assessment') }}" class="btn btn-primary">新建考核</a>
+    </div>
+
+    <!-- ✅ 搜索和筛选表单 -->
+    <form method="get" class="row g-3 mb-3">
+        <div class="col-md-4">
+            <input type="text" name="keyword" value="{{ keyword }}" class="form-control" placeholder="搜索考核名称">
+        </div>
+        <div class="col-md-3">
+            <select name="department" class="form-select">
+                <option value="">全部部门</option>
+                {% for dep in departments %}
+                    <option value="{{ dep }}" {% if dep == department %}selected{% endif %}>{{ dep }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-secondary">筛选</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle text-center">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>考核名称</th>
+                    <th>所属地区</th>
+                    <th>模板</th>
+                    <th>创建时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for assessment in assessments.items %}
+                <tr>
+                    <td>{{ assessment.id }}</td>
+                    <td>{{ assessment.assessment_name }}</td>
+                    <td>{{ assessment.department }}</td>
+                    <td>{{ assessment.template.template_name }}</td>
+                    <td>{{ assessment.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.view_assessment', assessment_id=assessment.id) }}" class="btn btn-sm btn-info">查看</a>
+                        <a href="{{ url_for('admin.assign_assessors', assessment_id=assessment.id) }}" class="btn btn-sm btn-secondary">设置考核人</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ✅ 分页导航 -->
+    <nav aria-label="分页">
+        <ul class="pagination justify-content-center">
+            {% if assessments.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin.assessments', page=assessments.prev_num, keyword=keyword, department=department) }}">上一页</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">上一页</span></li>
+            {% endif %}
+
+            {% for p in range(1, assessments.pages + 1) %}
+            <li class="page-item {% if p == assessments.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('admin.assessments', page=p, keyword=keyword, department=department) }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+
+            {% if assessments.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('admin.assessments', page=assessments.next_num, keyword=keyword, department=department) }}">下一页</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled"><span class="page-link">下一页</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+{% endblock %}

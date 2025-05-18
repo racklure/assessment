@@ -1,0 +1,67 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>考核记录详情</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">考核信息</h5>
+            <p class="card-text">
+                <strong>考核人：</strong>{{ record.assessor.name }}<br>
+                <strong>被考核人：</strong>{{ record.assessee.name }}<br>
+                <strong>部门：</strong>{{ record.assessee.department }}<br>
+                <strong>状态：</strong>{{ record.status }}<br>
+                <strong>创建时间：</strong>{{ record.create_time.strftime('%Y-%m-%d %H:%M:%S') }}
+            </p>
+        </div>
+    </div>
+	{% if record.photo_url %}
+	<h3 class="mt-4">上传照片</h3>
+	<div class="row">
+		{% for url in record.photo_url.split(';') %}
+		<div class="col-md-3 col-6 mb-3">
+			<img src="{{ url }}" alt="工作照片" class="img-fluid rounded border">
+		</div>
+		{% endfor %}
+	</div>
+	{% endif %}
+
+
+
+    <h3 class="mt-4">评分详情</h3>
+    {% if record.score_data and record.assessment.template %}
+        {% set template_items = record.assessment.template.items %}
+        {% set score_data = record.score_data | json_decode %}
+        <table class="table">
+            <thead>
+                <tr>
+                    {% for item in template_items %}
+                        <th>{{ item.name }}</th>
+                    {% endfor %}
+                    <th>得分</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in template_data %}
+                    <tr>
+                        {% for item in template_items %}
+                            <td>{{ data[item.name] }}</td>
+                        {% endfor %}
+                        <td>
+                            {% set score = score_data[data.id|string] %}
+                            {{ score | default(0) }}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>暂无评分数据</p>
+    {% endif %}
+
+    <div class="mt-3">
+        <a href="{{ url_for('admin.view_assessment', assessment_id=record.assessment_id) }}" class="btn btn-secondary">返回考核详情</a>
+    </div>
+</div>
+{% endblock %}

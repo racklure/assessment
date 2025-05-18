@@ -1,0 +1,89 @@
+{% extends 'layout.html' %}
+
+{% block title %}考核面板 - 考核评分系统{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>考核面板</h2>
+            <p>欢迎，{{ current_user.name }}。您可以在这里进行考核评分工作。</p>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="card mb-4">
+        <div class="card-header">
+            可用考核
+        </div>
+        <div class="card-body">
+            {% if assessments %}
+            <div class="list-group">
+                {% for assessment in assessments %}
+                <a href="{{ url_for('assessor.assessment_detail', assessment_id=assessment.id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ assessment.assessment_name }}</h5>
+                        <small>{{ assessment.created_at.strftime('%Y-%m-%d') }}</small>
+                    </div>
+                    <p class="mb-1">部门: {{ assessment.department }}</p>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-center">暂无可用考核</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            最近完成的考核
+        </div>
+        <div class="card-body">
+            {% if completed_records %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>考核名称</th>
+                            <th>被考核人</th>
+                            <th>考核日期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+						{% for record in completed_records %}
+						<tr>
+							<td>{{ record.assessment.assessment_name }}</td>
+							<td>{{ record.assessee.name }}</td>
+							<td>{{ record.create_time.strftime('%Y-%m-%d %H:%M') }}</td>
+							<td>
+								{% if record.status == 'pending' %}
+								<a href="{{ url_for('assessor.evaluate', assessment_id=record.assessment.id, assessee_id=record.assessee.id) }}"
+								   class="btn btn-sm btn-primary">去考核</a>
+								{% else %}
+								<span class="badge bg-success">已完成</span>
+								<span class="text-muted">{{ record.create_time.strftime('%Y-%m-%d %H:%M') }}</span>
+								{% endif %}
+							</td>
+						</tr>
+						{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center">暂无完成的考核记录</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

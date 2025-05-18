@@ -1,0 +1,75 @@
+{% extends "admin/base.html" %}
+
+{% block title %}被考核人管理 - 考核评分系统{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>被考核人管理</h2>
+            <p>管理系统中的被考核人信息</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('admin.import_assessees') }}" class="btn btn-primary">
+                <i class="bi bi-upload"></i> 导入被考核人
+            </a>
+            <a href="{{ url_for('admin.new_assessee') }}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> 添加被考核人
+            </a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-header">
+            被考核人列表
+        </div>
+        <div class="card-body">
+            {% if assessees %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>姓名</th>
+                            <th>地区</th>
+                            <th>部门</th>
+                            <th>岗位</th>
+                            <!--<th>创建日期</th>-->
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assessee in assessees %}
+                        <tr>
+                            <td>{{ assessee.id }}</td>
+                            <td>{{ assessee.name }}</td>
+                            <td>{{ assessee.department }}</td>
+                            <td>{{ assessee.parent_department }}</td>
+                            <td>{{ assessee.position }}</td>
+                            <!--<td>{{ assessee.created_at.strftime('%Y-%m-%d') }}</td>-->
+                            <td>
+                                <a href="{{ url_for('admin.edit_assessee', assessee_id=assessee.id) }}" class="btn btn-sm btn-info">编辑</a>
+                                <a href="{{ url_for('admin.delete_assessee', assessee_id=assessee.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('确定要删除此被考核人吗？')">删除</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center">暂无被考核人数据</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

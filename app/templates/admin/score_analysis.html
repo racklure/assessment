@@ -1,0 +1,108 @@
+
+{% extends 'admin/base.html' %}
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">服务明星汇总表</h2>
+
+  <!-- 🔹 年 + 季度选择 -->
+  <div class="mb-3 row">
+    <div class="col-md-2">
+      <select id="yearSelect" class="form-select">
+        {% for y in range(2023, 2026) %}
+        <option value="{{ y }}">{{ y }} 年</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <select id="quarterSelect" class="form-select">
+        <option value="1">第 1 季度</option>
+        <option value="2">第 2 季度</option>
+        <option value="3">第 3 季度</option>
+        <option value="4">第 4 季度</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <button id="filterBtn" class="btn btn-primary">查询</button>
+      <button id="exportBtn" class="btn btn-success ms-2">导出 Excel</button>
+    </div>
+  </div>
+
+  <!-- 🔹 暂无数据提示 -->
+  <div id="noDataMsg" class="alert alert-warning" style="display: none;">
+    暂无考核数据
+  </div>
+
+  <!-- 🔹 表格 -->
+  <table class="table table-bordered table-striped" id="summaryTable" style="display: none;">
+    <thead class="table-dark">
+      <tr id="summaryHeader"></tr>
+    </thead>
+    <tbody id="summaryBody"></tbody>
+  </table>
+</div>
+
+<script>
+function loadTable(year, quarter) {
+  fetch(`/summary/quarter?year=${year}&quarter=${quarter}`)
+    .then(response => response.json())
+    .then(res => {
+      const data = res.data;
+      const columns = res.columns || Object.keys(data[0] || {});
+      const headerRow = document.getElementById("summaryHeader");
+      const body = document.getElementById("summaryBody");
+      const table = document.getElementById("summaryTable");
+      const noData = document.getElementById("noDataMsg");
+
+      headerRow.innerHTML = '';
+      body.innerHTML = '';
+
+      if (!data || data.length === 0) {
+        table.style.display = "none";
+        noData.style.display = "block";
+        return;
+      }
+
+      table.style.display = "table";
+      noData.style.display = "none";
+
+      // 表头
+      columns.forEach(key => {
+        const th = document.createElement("th");
+        th.textContent = key;
+        headerRow.appendChild(th);
+      });
+
+      // 表体
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        columns.forEach(col => {
+          const td = document.createElement("td");
+          td.textContent = row[col];
+          tr.appendChild(td);
+        });
+        body.appendChild(tr);
+      });
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const yearSel = document.getElementById("yearSelect");
+  const quarterSel = document.getElementById("quarterSelect");
+  const now = new Date();
+  yearSel.value = now.getFullYear();
+  quarterSel.value = Math.floor(now.getMonth() / 3) + 1;
+
+  loadTable(yearSel.value, quarterSel.value);
+
+  document.getElementById("filterBtn").addEventListener("click", () => {
+    loadTable(yearSel.value, quarterSel.value);
+  });
+
+  document.getElementById("exportBtn").addEventListener("click", () => {
+    const y = yearSel.value;
+    const q = quarterSel.value;
+    window.location.href = `/summary/export_excel?year=${y}&quarter=${q}`;
+  });
+});
+</script>
+{% endblock %}

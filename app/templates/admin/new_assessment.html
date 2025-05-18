@@ -1,0 +1,44 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">新建考核</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="assessment_name">考核名称</label>
+            <input type="text" class="form-control" id="assessment_name" name="assessment_name" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="department">所属地区</label>
+            <input type="text" class="form-control" id="department" name="department" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="template_id">选择模板</label>
+            <select class="form-control" id="template_id" name="template_id" required>
+                <option value="">请选择模板</option>
+                
+                <!-- 手动创建的模板 -->
+                <optgroup label="手动创建的模板">
+                    {% for template in templates if template.category != 'imported' %}
+                    <option value="{{ template.id }}">{{ template.template_name }}</option>
+                    {% endfor %}
+                </optgroup>
+                
+                <!-- 导入的模板 -->
+                <optgroup label="导入的模板">
+                    {% for template in templates if template.category == 'imported' %}
+                    <option value="{{ template.id }}">{{ template.template_name }}</option>
+                    {% endfor %}
+                </optgroup>
+            </select>
+        </div>
+        
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary">创建考核</button>
+            <a href="{{ url_for('admin.assessments') }}" class="btn btn-secondary">取消</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+
+{% block title %}考核人管理 - 考核评分系统{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>考核人管理</h2>
+            <p>管理系统中的考核人信息</p>
+        </div>
+        <div class="col-auto">
+            <a href="{{ url_for('admin.import_assessors') }}" class="btn btn-primary">
+                <i class="bi bi-upload"></i> 导入考核人
+            </a>
+            <a href="{{ url_for('admin.new_assessor') }}" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> 添加考核人
+            </a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-success">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-header">
+            考核人列表
+        </div>
+        <div class="card-body">
+            {% if assessors %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>姓名</th>
+                            <th>用户名</th>
+                            <th>组别</th>
+                            <th>考核频率</th>
+                            <th>分数权重</th>
+                            <th>创建日期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assessor in assessors %}
+                        <tr>
+                            <td>{{ assessor.id }}</td>
+                            <td>{{ assessor.name }}</td>
+                            <td>{{ assessor.user.username }}</td>
+                            <td>{{ assessor.group_name }}</td>
+                            <td>
+                                {% if assessor.frequency == 'monthly' %}
+                                月度
+                                {% elif assessor.frequency == 'quarterly' %}
+                                季度
+                                {% endif %}
+                            </td>
+                            <td>{{ assessor.score_weight }}</td>
+                            <td>{{ assessor.created_at.strftime('%Y-%m-%d') }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.edit_assessor', assessor_id=assessor.id) }}" class="btn btn-sm btn-info">编辑</a>
+                                <a href="{{ url_for('admin.delete_assessor', assessor_id=assessor.id) }}" 
+                                   class="btn btn-sm btn-danger" 
+                                   onclick="return confirm('确定要删除此考核人吗？')">删除</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center">暂无考核人数据</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

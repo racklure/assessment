@@ -1,0 +1,123 @@
+{% extends "admin/base.html" %}
+
+{% block title %}新建考核模板 - 考核评分系统{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>新建考核模板</h2>
+            <p>创建新的考核评分表模板</p>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-danger">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-header">
+            模板信息
+        </div>
+        <div class="card-body">
+            <form method="POST" id="templateForm">
+                <div class="mb-3">
+                    <label for="template_name" class="form-label">模板名称</label>
+                    <input type="text" class="form-control" id="template_name" name="template_name" required>
+                </div>
+                
+                <h4 class="mt-4 mb-3">评分项目</h4>
+                
+                <div id="itemsContainer">
+                    <!-- 评分项目将通过JavaScript动态添加 -->
+                </div>
+                
+                <input type="hidden" id="item_count" name="item_count" value="0">
+                
+                <div class="mb-3">
+                    <button type="button" class="btn btn-outline-secondary" id="addItemBtn">
+                        <i class="bi bi-plus-circle"></i> 添加评分项
+                    </button>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{{ url_for('admin.templates') }}" class="btn btn-secondary">取消</a>
+                    <button type="submit" class="btn btn-primary">保存模板</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const itemsContainer = document.getElementById('itemsContainer');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const itemCountInput = document.getElementById('item_count');
+        let itemCount = 0;
+        
+        // 添加评分项目
+        function addItem() {
+            itemCount++;
+            itemCountInput.value = itemCount;
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'card mb-3 item-card';
+            itemDiv.id = `item_${itemCount}`;
+            
+            itemDiv.innerHTML = `
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8 mb-2">
+                            <label for="item_name_${itemCount}" class="form-label">评分项名称</label>
+                            <input type="text" class="form-control" id="item_name_${itemCount}" name="item_name_${itemCount}" required>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <label for="item_max_score_${itemCount}" class="form-label">满分值</label>
+                            <input type="number" class="form-control" id="item_max_score_${itemCount}" name="item_max_score_${itemCount}" min="0" step="0.1" required>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end mb-2">
+                            <button type="button" class="btn btn-outline-danger" onclick="removeItem(${itemCount})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            itemsContainer.appendChild(itemDiv);
+        }
+        
+        // 删除评分项目
+        window.removeItem = function(id) {
+            const itemDiv = document.getElementById(`item_${id}`);
+            if (itemDiv) {
+                itemDiv.remove();
+            }
+        };
+        
+        // 添加按钮事件
+        addItemBtn.addEventListener('click', addItem);
+        
+        // 默认添加一个评分项
+        addItem();
+        
+        // 表单提交验证
+        document.getElementById('templateForm').addEventListener('submit', function(event) {
+            const items = document.querySelectorAll('.item-card');
+            if (items.length === 0) {
+                event.preventDefault();
+                alert('请至少添加一个评分项目');
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

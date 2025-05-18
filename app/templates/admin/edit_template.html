@@ -1,0 +1,105 @@
+{% extends "admin/base.html" %}
+
+{% block title %}编辑考核模板 - 考核评分系统{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>编辑考核模板</h2>
+            <p>修改考核模板信息</p>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+        {{ message }}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        <div class="card-header">
+            模板信息
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="template_name" class="form-label">模板名称</label>
+                    <input type="text" class="form-control" id="template_name" name="template_name" 
+                           value="{{ template.template_name }}" required>
+                </div>
+                
+                <div id="items-container">
+                    {% for item in template.items %}
+                    <div class="row mb-3 item-row">
+                        <div class="col-md-4">
+                            <label class="form-label">考核项目</label>
+                            <input type="text" class="form-control" name="items[]" value="{{ item.name }}" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">分值</label>
+                            <input type="number" class="form-control" name="scores[]" value="{{ item.score }}" 
+                                   step="0.01" min="0" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">评分标准</label>
+                            <input type="text" class="form-control" name="criteria[]" value="{{ item.criteria }}" required>
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger btn-sm remove-item">删除</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mb-3">
+                    <button type="button" class="btn btn-secondary" id="add-item">添加考核项目</button>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="{{ url_for('admin.templates') }}" class="btn btn-secondary">返回</a>
+                    <button type="submit" class="btn btn-primary">保存更改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('add-item').addEventListener('click', function() {
+    const container = document.getElementById('items-container');
+    const newRow = document.createElement('div');
+    newRow.className = 'row mb-3 item-row';
+    newRow.innerHTML = `
+        <div class="col-md-4">
+            <label class="form-label">考核项目</label>
+            <input type="text" class="form-control" name="items[]" required>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">分值</label>
+            <input type="number" class="form-control" name="scores[]" step="0.01" min="0" required>
+        </div>
+        <div class="col-md-5">
+            <label class="form-label">评分标准</label>
+            <input type="text" class="form-control" name="criteria[]" required>
+        </div>
+        <div class="col-md-1 d-flex align-items-end">
+            <button type="button" class="btn btn-danger btn-sm remove-item">删除</button>
+        </div>
+    `;
+    container.appendChild(newRow);
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('remove-item')) {
+        e.target.closest('.item-row').remove();
+    }
+});
+</script>
+{% endblock %}
